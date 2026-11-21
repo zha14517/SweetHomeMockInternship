@@ -2002,12 +2002,35 @@ public class PlanComponent extends JComponent implements PlanView, Scrollable, P
     }
     return strokeWidth;
   }
-  
+
+  public int print(Graphics g, PageFormat pageFormat, int pageIndex) {
+    if (this.home.getLevels().isEmpty()) {
+      return printPlan(g, pageFormat, pageIndex, false);
+    }
+
+    int levelPageIndex = 0;
+    for (Level level : this.home.getLevels()) {
+      if (level.isViewable()) {
+        if (levelPageIndex == pageIndex) {
+          Level previouslySelected = this.home.getSelectedLevel();
+          try {
+            this.home.setSelectedLevel(level);
+            return printPlan(g, pageFormat, 0, true);
+          } finally {
+            this.home.setSelectedLevel(previouslySelected);
+          }
+        }
+        levelPageIndex++;
+      }
+    }
+    return NO_SUCH_PAGE;
+  }
+
   /**
    * Prints this component plan at the scale given in the home print attributes or at a scale 
    * that makes it fill <code>pageFormat</code> imageable size if this attribute is <code>null</code>.
    */
-  public int print(Graphics g, PageFormat pageFormat, int pageIndex) {
+  public int printPlan(Graphics g, PageFormat pageFormat, int pageIndex, boolean fitToPage) {
     List<Selectable> printedItems = getPaintedItems(); 
     Rectangle2D printedItemBounds = getItemsBounds(g, printedItems);
     if (printedItemBounds != null) {
@@ -2020,7 +2043,7 @@ public class PlanComponent extends JComponent implements PlanView, Scrollable, P
       float columnIndex;
       int pagesPerRow;
       int pagesPerColumn;
-      if (this.home.getPrint() == null || this.home.getPrint().getPlanScale() == null) {
+      if (fitToPage || this.home.getPrint() == null || this.home.getPrint().getPlanScale() == null) {
         // Compute a scale that ensures the plan will fill the component if plan scale is null
         printScale = getPrintPreferredScale(g, pageFormat) * LengthUnit.centimeterToInch(72);
         if (pageIndex > 0) {
@@ -2071,7 +2094,7 @@ public class PlanComponent extends JComponent implements PlanView, Scrollable, P
       g2D.dispose();
       return PAGE_EXISTS;
     } else {
-      return NO_SUCH_PAGE;
+      return fitToPage ? PAGE_EXISTS : NO_SUCH_PAGE;
     }
   }
   
