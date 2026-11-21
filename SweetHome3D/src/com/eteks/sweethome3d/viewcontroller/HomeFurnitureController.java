@@ -59,8 +59,7 @@ public class HomeFurnitureController implements Controller {
   /**
    * The possible values for {@linkplain #getPaint() paint type}.
    */
-  public enum FurniturePaint {DEFAULT, COLORED, TEXTURED, MODEL_MATERIALS} 
-
+  public enum FurniturePaint {DEFAULT, COLORED, TEXTURED, MODEL_MATERIALS}
   /**
    * The possible values for {@linkplain #getShininess() shininess type}.
    */
@@ -595,7 +594,6 @@ public class HomeFurnitureController implements Controller {
    */
   public boolean isPropertyEditable(Property property) {
     switch (property) {
-      case DESCRIPTION :
       case PRICE :
         return false;
       case LIGHT_POWER :

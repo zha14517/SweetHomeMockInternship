@@ -56,7 +56,7 @@ public class HomePieceOfFurniture extends HomeObject implements PieceOfFurniture
   /** 
    * The properties on which home furniture may be sorted.  
    */
-  public enum SortableProperty {CATALOG_ID, NAME, WIDTH, DEPTH, HEIGHT, MOVABLE, 
+  public enum SortableProperty {CATALOG_ID, NAME, WIDTH, DEPTH, HEIGHT, VOLUME, MOVABLE,
                                 DOOR_OR_WINDOW, COLOR, TEXTURE, VISIBLE, X, Y, ELEVATION, ANGLE,
                                 PRICE, VALUE_ADDED_TAX, VALUE_ADDED_TAX_PERCENTAGE, PRICE_VALUE_ADDED_TAX_INCLUDED, LEVEL};
   private static final Map<SortableProperty, Comparator<HomePieceOfFurniture>> SORTABLE_PROPERTY_COMPARATORS;
@@ -107,6 +107,12 @@ public class HomePieceOfFurniture extends HomeObject implements PieceOfFurniture
           return HomePieceOfFurniture.compare(piece1.depth, piece2.depth);
         }
       });
+    SORTABLE_PROPERTY_COMPARATORS.put(SortableProperty.VOLUME, new Comparator<HomePieceOfFurniture>() {
+      @Override
+      public int compare(HomePieceOfFurniture piece1, HomePieceOfFurniture piece2) {
+        return HomePieceOfFurniture.compare(piece1.getVolume(), piece2.getVolume());
+      }
+    });
     SORTABLE_PROPERTY_COMPARATORS.put(SortableProperty.MOVABLE, new Comparator<HomePieceOfFurniture>() {
         public int compare(HomePieceOfFurniture piece1, HomePieceOfFurniture piece2) {
           return HomePieceOfFurniture.compare(piece1.movable, piece2.movable);
@@ -591,6 +597,10 @@ public class HomePieceOfFurniture extends HomeObject implements PieceOfFurniture
   /**
    * Returns the elevation of the bottom of this piece of furniture on its level. 
    */
+  @Override
+  public float getVolume() {
+    return getWidth() * getDepth() * getHeight();
+  }
   public float getElevation() {
     return this.elevation;
   }
@@ -1234,6 +1244,6 @@ public class HomePieceOfFurniture extends HomeObject implements PieceOfFurniture
    * Returns a comparator that compares furniture on a given <code>property</code> in ascending order.
    */
   public static Comparator<HomePieceOfFurniture> getFurnitureComparator(SortableProperty property) {
-    return SORTABLE_PROPERTY_COMPARATORS.get(property);    
+    return SORTABLE_PROPERTY_COMPARATORS.get(property);
   }
 }
